@@ -22,15 +22,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User findUserById(String id) {
-        List<User> userList = userDao.findUsersById(Integer.parseInt(id));
+    public User findUserById(long id) {
+        List<User> userList = userDao.findUsersById(id);
         return userList.get(0);
     }
 
     @Transactional
     @Override
-    public User updateUser(String id, User user) {
-        List<User> userListFromDB = userDao.findUsersById(Integer.parseInt(id));
+    public User updateUser(long id, User user) {
+        List<User> userListFromDB = userDao.findUsersById(id);
         if (user.getFirstName().equals("")) {
             user.setFirstName(userListFromDB.get(0).getFirstName());
         }
@@ -38,14 +38,14 @@ public class UserServiceImpl implements UserService {
             user.setLastName(userListFromDB.get(0).getLastName());
         }
         user.setMarried(user.isMarried());
-        user.setId((long) Integer.parseInt(id));
+        user.setId(id);
         return userDao.updateUser(user);
     }
 
     @Transactional
     @Override
-    public void deleteUserById(String id) {
-        userDao.deleteUserById(Integer.parseInt(id));
+    public void deleteUserById(long id) {
+        userDao.deleteUserById(id);
     }
 
     @Transactional
