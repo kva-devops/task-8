@@ -24,13 +24,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(String id) {
         List<User> userList = userDao.findUsersById(Integer.parseInt(id));
-        try {
-            if (userList.isEmpty()) {
-                throw new NullPointerException("User not found");
-            }
-        } catch (RuntimeException e) {
-            return null;
-        }
         return userList.get(0);
     }
 
@@ -38,9 +31,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(String id, User user) {
         List<User> userListFromDB = userDao.findUsersById(Integer.parseInt(id));
-        if (userListFromDB.isEmpty()) {
-            throw new NullPointerException("User not found");
-        }
         if (user.getFirstName().equals("")) {
             user.setFirstName(userListFromDB.get(0).getFirstName());
         }
@@ -49,12 +39,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setMarried(user.isMarried());
         user.setId((long) Integer.parseInt(id));
-
-        User updatedUser = userDao.updateUser(user);
-        if (updatedUser == null) {
-            throw new RuntimeException();
-        }
-        return updatedUser;
+        return userDao.updateUser(user);
     }
 
     @Transactional
@@ -66,10 +51,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<User> getAllUsers() {
-        List<User> userList = userDao.getAllUsers();
-        if (userList == null) {
-            throw new RuntimeException();
-        }
-        return userList;
+        return userDao.getAllUsers();
     }
 }
