@@ -34,7 +34,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "error";
         } else {
-            userService.createUser(user);
+            userService.createOrUpdateUser(user);
             return "redirect:/";
         }
     }
@@ -53,7 +53,8 @@ public class UserController {
 
     @PostMapping("/update")
     public String updateUser(@RequestParam(name = "id") long id, @ModelAttribute User user) {
-        userService.updateUser(id, user);
+        user.setId(id);
+        userService.createOrUpdateUser(user);
         return "redirect:/";
     }
 

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import web.model.User;
 
 import javax.persistence.EntityManagerFactory;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -30,32 +29,25 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findUsersById(long id) {
-        List<User> userList = new ArrayList<>();
-        userList = entityManagerFactory
+    public User findUserById(long id) {
+        return entityManagerFactory
                 .createEntityManager()
-                .createQuery(
-                        "SELECT u FROM User u WHERE u.id = :id")
-                .setParameter("id", id)
-                .getResultList();
-        return userList;
+                .find(User.class, id);
     }
 
     @Override
-    public User updateUser(User user) {
+    public void updateUser(User user) {
         var entityManager = entityManagerFactory.createEntityManager();
         var transaction = entityManager.getTransaction();
-        User result = null;
         try {
             transaction.begin();
-            result = entityManager.merge(user);
+            entityManager.merge(user);
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
         } finally {
             entityManager.close();
         }
-        return result;
     }
 
     @Override
@@ -64,10 +56,8 @@ public class UserDaoImpl implements UserDao {
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            entityManager
-                    .createQuery("DELETE FROM User u WHERE u.id = :id")
-                    .setParameter("id", id)
-                    .executeUpdate();
+            User user = entityManager.find(User.class, id);
+            entityManager.remove(user);
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -80,8 +70,7 @@ public class UserDaoImpl implements UserDao {
     public List<User> getAllUsers() {
         return entityManagerFactory
                 .createEntityManager()
-                .createQuery(
-                        "SELECT u FROM User u ORDER BY u.id")
+                .createQuery("select u from User u order by u.id", User.class)
                 .getResultList();
     }
 }
