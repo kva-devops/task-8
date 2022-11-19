@@ -40,22 +40,21 @@ public class UserController {
     }
 
     @GetMapping("/delete")
-    public String deleteUser(@RequestParam(name = "id") long id) {
+    public String deleteUser(@RequestParam(name = "id") Integer id) {
         userService.deleteUserById(id);
         return "redirect:/";
     }
 
     @GetMapping("/update")
-    public String loadPageForUpdateUser(@RequestParam(name = "id") long id, Model model) {
-        model.addAttribute("user", userService.findUserById(id));
+    public String loadPageForUpdateUser(@RequestParam(name = "id") Integer id, Model model) {
+        model.addAttribute("user", userService.findUserById(id).get());
         return "update";
     }
 
     @PostMapping("/update")
-    public String updateUser(@RequestParam(name = "id") long id, @ModelAttribute User user) {
+    public String updateUser(@RequestParam(name = "id") Integer id, @ModelAttribute User user) {
         user.setId(id);
         userService.createOrUpdateUser(user);
         return "redirect:/";
     }
-
 }

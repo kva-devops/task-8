@@ -3,33 +3,37 @@ package web.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import web.dao.UserDao;
+import web.dao.UserRepository;
 import web.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserDao userDao;
+    private final UserRepository userRepository;
 
-    @Transactional
-    @Override
-    public User findUserById(long id) {
-        return userDao.findUserById(id);
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Transactional
     @Override
-    public void deleteUserById(long id) {
-        userDao.deleteUserById(id);
+    public Optional<User> findUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserById(Integer id) {
+        userRepository.deleteById(id);
     }
 
     @Transactional
     @Override
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        return userRepository.findAllByOrderById();
     }
 
     @Transactional
@@ -43,18 +47,18 @@ public class UserServiceImpl implements UserService {
     }
 
     private void createUser(User user) {
-        userDao.createUser(user);
+        userRepository.save(user);
     }
 
     private void updateUser(User user) {
-        User userFromDB = userDao.findUserById(user.getId());
+        Optional<User> userFromDB = userRepository.findById(user.getId());
         if (user.getFirstName().equals("")) {
-            user.setFirstName(userFromDB.getFirstName());
+            user.setFirstName(userFromDB.get().getFirstName());
         }
         if (user.getLastName().equals("")) {
-            user.setLastName(userFromDB.getLastName());
+            user.setLastName(userFromDB.get().getLastName());
         }
         user.setMarried(user.isMarried());
-        userDao.updateUser(user);
+        userRepository.save(user);
     }
 }
